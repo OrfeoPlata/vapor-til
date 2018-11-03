@@ -21,3 +21,5 @@ extension Acronym: Migration {}
 //Make Acronym conform to Content
 extension Acronym: Content {}
 
+//Retrive a singel acronym
+extension Acronym: Parameter {}
