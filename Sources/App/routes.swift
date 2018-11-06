@@ -15,12 +15,14 @@ public func routes(_ router: Router) throws {
     
     //Acronyms
     let acronymsController = AcronymsController()
-    
     try router.register(collection: acronymsController)
     
     
     //UsersController
     let usersController = UsersController()
-    
     try router.register(collection: usersController)
+    
+    //CategoriesController
+    let categoriesController = CategoriesController()
+    try router.register(collection: categoriesController)
 }

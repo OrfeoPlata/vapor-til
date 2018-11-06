@@ -35,6 +35,15 @@ struct AcronymsController: RouteCollection {
         
         //HTTP GET request to /api/acronyms/<Acronym ID>/user to getUserHandler
         acronymsRoutes.get(Acronym.parameter, "user", use: getUserHandler)
+        
+        //HTTP POST request to /api/acronyms/<ACRONYM_ID>/categories/<CATEGORY_ID>
+        acronymsRoutes.post(Acronym.parameter, "categories", Category.parameter, use: addCategoriesHandler)
+        
+        //HTTP GET request to /api/acronyms/<ACRONYM_ID>/categories
+        acronymsRoutes.get(Acronym.parameter, "categories", use: getCategoriesHandler)
+        
+        //HTTP DELETE request to /api/acronyms/<ACRONYM_ID>/categories/<CATEGORY_ID>
+        acronymsRoutes.delete(Acronym.parameter, "categories", Category.parameter, use: removeCategoriesHandler)
     }
     
     //Add a new route handler
@@ -89,6 +98,24 @@ struct AcronymsController: RouteCollection {
     func getUserHandler(_ req: Request) throws -> Future<User> {
         return try req.parameters.next(Acronym.self).flatMap(to: User.self) { acronym in
             acronym.user.get(on: req)
+        }
+    }
+    
+    func addCategoriesHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(to: HTTPStatus.self, req.parameters.next(Acronym.self), req.parameters.next(Category.self)) { acronym, category in
+            return acronym.categories.attach(category, on: req).transform(to: .created)
+        }
+    }
+    
+    func getCategoriesHandler(_ req: Request) throws -> Future<[Category]> {
+        return try req.parameters.next(Acronym.self).flatMap(to: [Category].self) { acronym in
+            try acronym.categories.query(on: req).all()
+        }
+    }
+    
+    func removeCategoriesHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(to: HTTPStatus.self, req.parameters.next(Acronym.self), req.parameters.next(Category.self)) { acronym, category in
+            return acronym.categories.detach(category, on: req).transform(to: .noContent)
         }
     }
 }

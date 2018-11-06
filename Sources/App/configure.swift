@@ -32,12 +32,11 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     databases.add(database: database, as: .psql)
     services.register(databases)
     
-    
     var migrations = MigrationConfig()
-    
-    //Change the Acronym migration to use the .psql database
     migrations.add(model: User.self, database: .psql)
     migrations.add(model: Acronym.self, database: .psql)
+    migrations.add(model: Category.self, database: .psql)
+    migrations.add(model: AcronymCategoryPivot.self, database: .psql)
     services.register(migrations)
     
     var commandConfig = CommandConfig.default()
